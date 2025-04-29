@@ -4,22 +4,17 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Analog Clock </title>
+    <title>Analog Clock and Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-            margin: 0;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-            font-size: 2rem;
-            color: #333;
+            gap: 3rem;
         }
 
         .clock {
@@ -43,13 +38,13 @@
         .hour {
             width: 6px;
             height: 70px;
-            background: #000;
+            background: black;
         }
 
         .minute {
             width: 4px;
             height: 100px;
-            background: #666;
+            background: green;
         }
 
         .second {
@@ -81,30 +76,64 @@
             color: #000;
             transform: translate(-50%, -50%);
         }
+
+        .btn {
+            @apply p-4 text-xl font-bold bg-gray-200 rounded hover:bg-gray-300 transition;
+        }
     </style>
 </head>
 
 <body>
 
-    <h1 id="time-text">Loading...</h1>
-
-    <div class="clock" id="clock">
-        <div class="hand hour" id="hour-hand"></div>
-        <div class="hand minute" id="minute-hand"></div>
-        <div class="hand second" id="second-hand"></div>
-        <div class="center-dot"></div>
+    <!-- Analog Clock Section -->
+    <div class="flex flex-col items-center">
+        <h1 id="time-text" class="text-2xl font-bold mb-4 text-gray-700">Loading...</h1>
+        <div class="clock" id="clock">
+            <div class="hand hour" id="hour-hand"></div>
+            <div class="hand minute" id="minute-hand"></div>
+            <div class="hand second" id="second-hand"></div>
+            <div class="center-dot"></div>
+        </div>
     </div>
 
+    <!-- Calculator Section -->
+    <div class="bg-white p-6 rounded-2xl shadow-lg w-72">
+        <input type="text" id="display" disabled placeholder="0"
+            class="w-full mb-4 text-right text-2xl p-3 border rounded bg-gray-50" />
+
+        <div class="grid grid-cols-4 gap-3">
+            <button onclick="clr()" class="btn bg-red-500 text-white">C</button>
+            <button onclick="dev()" class="btn">/</button>
+            <button onclick="mul()" class="btn">*</button>
+            <button onclick="sub()" class="btn">-</button>
+
+            <button onclick="seven()" class="btn">7</button>
+            <button onclick="eig()" class="btn">8</button>
+            <button onclick="nin()" class="btn">9</button>
+            <button onclick="add()" class="btn row-span-2 bg-blue-500 text-white">+</button>
+
+            <button onclick="four()" class="btn">4</button>
+            <button onclick="fiv()" class="btn">5</button>
+            <button onclick="six()" class="btn">6</button>
+
+            <button onclick="one()" class="btn">1</button>
+            <button onclick="two()" class="btn">2</button>
+            <button onclick="thr()" class="btn">3</button>
+            <button onclick="equal()" class="btn col-span-2 bg-green-500 text-white">=</button>
+            <button onclick="zero()" class="btn col-span-2">0</button>
+        </div>
+    </div>
+
+    <!-- Clock Script -->
     <script>
-        // Create 1 to 12 numbers dynamically
         const clock = document.getElementById('clock');
         for (let i = 1; i <= 12; i++) {
             const number = document.createElement('div');
             number.classList.add('number');
             number.innerText = i;
 
-            const angle = (i * 30) - 90; // 360/12 = 30 degrees per number (subtract 90 to start from top)
-            const radius = 120; // Adjust radius as needed
+            const angle = (i * 30) - 90;
+            const radius = 120;
 
             const x = 150 + radius * Math.cos(angle * (Math.PI / 180));
             const y = 150 + radius * Math.sin(angle * (Math.PI / 180));
@@ -115,7 +144,6 @@
             clock.appendChild(number);
         }
 
-        // Clock hands movement
         function updateClock() {
             const now = new Date();
             const seconds = now.getSeconds();
@@ -130,18 +158,49 @@
             document.getElementById('minute-hand').style.transform = `translateX(-50%) rotate(${minuteDeg}deg)`;
             document.getElementById('hour-hand').style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
 
-            const formattedHours = hours.toString().padStart(2, '0');
+            let displayHours = hours % 12 || 12;
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+
+            const formattedHours = displayHours.toString().padStart(2, '0');
             const formattedMinutes = minutes.toString().padStart(2, '0');
             const formattedSeconds = seconds.toString().padStart(2, '0');
 
-            document.getElementById('time-text').innerText = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+            document.getElementById('time-text').innerText =
+                `${formattedHours}:${formattedMinutes}:${formattedSeconds} ${ampm}`;
         }
 
         setInterval(updateClock, 1000);
         updateClock();
     </script>
 
-    <script src="./app.js"></script>
+    <!-- Calculator Script -->
+    <script>
+        var Display = document.getElementById("display");
+
+        function one() { Display.value += "1"; }
+        function two() { Display.value += "2"; }
+        function thr() { Display.value += "3"; }
+        function four() { Display.value += "4"; }
+        function fiv() { Display.value += "5"; }
+        function six() { Display.value += "6"; }
+        function seven() { Display.value += "7"; }
+        function eig() { Display.value += "8"; }
+        function nin() { Display.value += "9"; }
+        function zero() { Display.value += "0"; }
+        function add() { Display.value += "+"; }
+        function sub() { Display.value += "-"; }
+        function dev() { Display.value += "/"; }
+        function mul() { Display.value += "*"; }
+        function clr() { Display.value = ""; }
+        function equal() {
+            try {
+                Display.value = eval(Display.value);
+            } catch {
+                Display.value = "Error";
+            }
+        }
+    </script>
+
 </body>
 
 </html>
